@@ -1,32 +1,47 @@
 import requests
 from dotenv import load_dotenv
 from os import environ
+import json
 load_dotenv()
 
 
-URL = "https://api.twitter.com/2"
+URL = 'https://api.twitter.com/2'
+
+USER_DETAILS=['created_at', 'description', 'entities', 'id',
+              'location', 'name', 'pinned_tweet_id', 'profile_image_url', 
+              'protected', 'public_metrics', 'url', 'username',
+              'verified','withheld']
+
+TWEET_DETAILS=['attachments', 'author_id', 'context_annotations', 
+                'created_at', 'entities', 'geo', 
+                'id', 'lang']
+
 
 class User:
     def __init__(self):
         self.headers = {
         'Authorization':'Bearer '+str(environ["BEARER_TOKEN"]),
         }
-        # self.max_tweets=10
-        # self.tweetfields='id,created_at'
+
 
     def jsondata(self,method,url):
         robj= requests.request(method, url, headers=self.headers)
-        return robj.text
+        return json.loads(robj.text)
     
-    def get_user(self,username=None,userid=None):
+    def get_user(self,username=None,userid=None,USER_DETAILS=USER_DETAILS):
         if(userid):
-            userid_url = URL +'/users/' + userid
+            userid_url = URL +'/users/' + userid + '?user.fields=' + ','.join(USER_DETAILS)
             return self.jsondata('GET',userid_url)
-        if(username):
-            username_url = URL +'/users/by/username/' + username
-            print(username_url)
-            return self.jsondata('GET',username_url)        
 
+        if(username):
+            username_url = URL +'/users/by/username/' + username + '?user.fields=' + ','.join(USER_DETAILS)
+            print(username_url)
+            return self.jsondata('GET',username_url)
+  
+    def get_userid(self,userid):
+        if(userid):
+            userid_url = URL +'/users/' + userid + '?user.fields=' + ','.join(USER_DETAILS)
+            return self.jsondata('GET',userid_url)
 
 
 class Tweet(User):
@@ -46,5 +61,11 @@ class Tweet(User):
         else:
             userid_url +=f'&pagination_token={pagination_token}'
         return self.jsondata('GET',userid_url)
+
+    def get_all_n_day(self,userid,days):
+        tweet_url = f'{URL}/users/{userid}/tweets?start_time={days}&max_results=99&tweet.fields='+','.join(TWEET_DETAILS)
+        return self.jsondata('GET',tweet_url)
+
+
     
 

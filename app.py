@@ -89,6 +89,7 @@ class Last_n_days(Resource):
                     "title":"null"
                 }}, 400
 
+
 class Database(Resource):
     def get(self):
         key_word= request.args.get('search')
@@ -118,4 +119,4 @@ api.add_resource(Index,'/')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

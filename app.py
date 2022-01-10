@@ -117,6 +117,5 @@ api.add_resource(Coll,'/v1/collections')
 api.add_resource(Index,'/')
 
 
-
 if __name__ == '__main__':
     app.run()

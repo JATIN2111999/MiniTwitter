@@ -1,21 +1,30 @@
 import collections
 from flask import Flask,make_response
 from flask import jsonify
-from flask import Flask,render_template,redirect, url_for, request
+from flask import Flask,render_template,redirect, url_for,request
 from flask_restful import reqparse, abort, Api, Resource
-from modules.getdb import get_all_coll, get_collections, insert_all_data, get_all
+from modules.getdb import get_all_coll, get_collections, insert_all_data, get_all,client
 from modules.helper import User,Tweet
-import json
-import time
-import re
 from datetime import datetime,timedelta
-
+from pymongo import MongoClient
+from pymongo.errors import OperationFailure
 
 t= Tweet()
 
 app = Flask(__name__)
 
 api =Api(app)
+
+
+class Index(Resource):
+    def get(self):
+        try:
+            client.get_database()
+            return{'message':'Data Base Connection Established........'},200
+
+        except OperationFailure as err:
+            return (f"Data Base Connection failed. Error: {err}"),503
+
 
 def checkerrors(data):
     if(data.get('errors') or data.get('error')):
@@ -104,8 +113,7 @@ api.add_resource(Userid, '/v1/userid/<string:userid>')
 api.add_resource(Last_n_days,'/v1/userid/<string:userid>/<int:days>')
 api.add_resource(Database,'/v1/db')
 api.add_resource(Coll,'/v1/collections')
-
-
+api.add_resource(Index,'/')
 
 
 

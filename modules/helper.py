@@ -54,18 +54,9 @@ class Tweet(User):
         url_id=f'{URL}/tweets/?ids={userids}&tweet.fields={self.tweetfields}'
         return self.jsondata('GET',url_id)
 
-    def get_all_tweets(self,userid,pagination_token=None):
-        userid_url = f'{URL}/users/{userid}/tweets?tweet.fields={self.tweetfields}&max_results={self.max_tweets}'
-        if(not pagination_token):
-            pass
-        else:
-            userid_url +=f'&pagination_token={pagination_token}'
-        return self.jsondata('GET',userid_url)
-
     def get_all_n_day(self,userid,days):
         tweet_url = f'{URL}/users/{userid}/tweets?start_time={days}&max_results=99&tweet.fields='+','.join(TWEET_DETAILS)
         return self.jsondata('GET',tweet_url)
-
 
     
 
